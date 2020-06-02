@@ -29,7 +29,7 @@ object Startup extends JFXApp {
               stops = Stops(Red, DarkRed))
           },
           new Text {
-            text = "Folder Compare App"
+            text = "App"
             style = "-fx-font: italic bold 100pt sans-serif"
             fill = new LinearGradient(
               endX = 0,
