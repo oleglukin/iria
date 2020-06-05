@@ -1,0 +1,8 @@
+
+.label{
+    -fx-text-fill: #ffffff;
+}
+
+.text-field{
+    -fx-min-width: 250;
+}
