@@ -6,3 +6,9 @@
 .text-field{
     -fx-min-width: 250;
 }
+
+#gridPane {
+    -fx-padding: 50, 100, 50, 50;
+    -fx-hgap: 10;
+    -fx-vgap: 10;
+}

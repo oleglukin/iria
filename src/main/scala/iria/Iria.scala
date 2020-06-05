@@ -59,9 +59,7 @@ object Iria extends JFXApp {
       stylesheets.add("compareconfig.css")
       fill = Color.rgb(38, 38, 38)
       content = new GridPane {
-        hgap = 10
-        vgap = 10
-        padding = Insets(50, 100, 50, 50)
+        id = "gridPane"
 
         add(label, 1, 0)
         add(leftFolderLabel, 0, 1)
