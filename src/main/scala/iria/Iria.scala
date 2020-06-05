@@ -14,32 +14,38 @@ import scalafx.stage.DirectoryChooser
 
 object Iria extends JFXApp {
 
-  val compareConfig = CompareConfig
+  val compareConfig = new CompareConfig("", "")
 
   val label = new Label("Select folders to compare")
 
-  val dirChoser = new DirectoryChooser { title = "Left folder" }
+  val dirChoser = new DirectoryChooser { title = "Select folder to compare" }
 
   val leftFolderLabel = new Label("Left")
   val leftFolderText = new TextField {
     onMouseClicked = (e: javafx.scene.input.MouseEvent) => {
-      text = dirChoser.showDialog(stage).getAbsolutePath
+      text = dirChoser.showDialog(stage).getAbsolutePath // TODO handle escape key pressed
     }
   }
 
   val rightFolderLabel = new Label("Right")
   val rightFolderText = new TextField {
     onMouseClicked = (e: javafx.scene.input.MouseEvent) => {
-      text = dirChoser.showDialog(stage).getAbsolutePath
+      text = dirChoser.showDialog(stage).getAbsolutePath // TODO handle escape key pressed
     }
   }
 
-  val compareButton = new Button("Compare")
-  compareButton.onAction = (event: ActionEvent) => {
-    import scalafx.scene.control.Alert
-    import scalafx.scene.control.Alert.AlertType
-    new Alert(AlertType.Information, "Hello Dialogs!!!").showAndWait()
+  val compareButton = new Button("Compare"){
+    onAction = (event: ActionEvent) => {
+      compareConfig.left = leftFolderText.getText
+      compareConfig.right = rightFolderText.getText
+
+      // TODO open other stage and produce results
+      import scalafx.scene.control.Alert // remove this
+      import scalafx.scene.control.Alert.AlertType
+      new Alert(AlertType.Information, s"${compareConfig.left}, ${compareConfig.right}").showAndWait()
+    }
   }
+
 
   stage = new PrimaryStage {
     title = "Iria - Folder Compare"
