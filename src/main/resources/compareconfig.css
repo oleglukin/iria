@@ -1,9 +1,9 @@
 
-.label{
+.label {
     -fx-text-fill: #ffffff;
 }
 
-.text-field{
+.text-field {
     -fx-min-width: 250;
 }
 
@@ -11,4 +11,12 @@
     -fx-padding: 50, 100, 50, 50;
     -fx-hgap: 10;
     -fx-vgap: 10;
+}
+
+.label#leftFolderMessage {
+    -fx-text-fill: red;
+}
+
+.label#rightFolderMessage {
+    -fx-text-fill: red;
 }
