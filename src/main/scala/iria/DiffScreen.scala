@@ -7,7 +7,8 @@ import scalafx.scene.Scene
 import scalafx.scene.paint.Color
 import scalafx.scene.layout.GridPane
 import scalafx.scene.control.{Label, Button, TextArea}
-import scalafx.scene.layout.HBox
+//import scalafx.scene.layout.HBox
+import scalafx.scene.layout.AnchorPane
 
 
 class DiffScreen {
@@ -27,23 +28,26 @@ class DiffScreen {
     }
   }
 
-  val hbox = new HBox(8) {
-    id = "hbox"
-    children.add(
-      new GridPane {
-        id = "resultsGridPane"
+  val gridPane = new GridPane {
+    id = "resultsGridPane"
 
-        add(button, 0, 0)
+    add(button, 0, 0)
 
-        add(label1, 0, 1)
-        add(labelLeft, 0, 2)
-        add(resultLeft, 0, 3)
+    add(label1, 0, 1)
+    add(labelLeft, 0, 2)
+    add(resultLeft, 0, 3)
 
-        add(labelRight, 1, 2)
-        add(resultRight, 1, 3)
-      }
-    )
+    add(labelRight, 1, 2)
+    add(resultRight, 1, 3)
   }
+
+  val pane: AnchorPane = new AnchorPane {
+    id = "pane"
+    children.add(gridPane)
+  }
+  AnchorPane.setAnchors(gridPane, 10, 10, 10, 10)
+  
+
 
 
   val stage: Stage = new Stage {
@@ -54,7 +58,7 @@ class DiffScreen {
     scene = new Scene {
       stylesheets.add("diffscreen.css")
       fill = Color.rgb(38, 38, 38)
-      content = hbox
+      root = pane
     }
   }
 
