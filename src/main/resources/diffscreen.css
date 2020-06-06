@@ -7,9 +7,5 @@
   -fx-hgap: 10;
   -fx-vgap: 10;
   -fx-grid-lines-visible: true;
-}
-
-#pane {
-  -fx-fill-height: true;
-  -fx-background-color: #262626
+  -fx-background-color: red
 }

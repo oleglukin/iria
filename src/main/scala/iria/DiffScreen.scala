@@ -3,16 +3,14 @@ package iria
 import iria.model.CompareConfig
 import javafx.event.ActionEvent
 import scalafx.stage.Stage
-import scalafx.scene.Scene
+import scalafx.scene.{Scene, Group}
 import scalafx.scene.paint.Color
 import scalafx.scene.layout.GridPane
 import scalafx.scene.control.{Label, Button, TextArea}
-//import scalafx.scene.layout.HBox
-import scalafx.scene.layout.AnchorPane
+import scalafx.scene.layout.ColumnConstraints
 
 
 class DiffScreen {
-  val label1 = new Label("Comparison results here for folders:")
   val labelLeft = new Label
   val labelRight = new Label
   val resultLeft = new TextArea
@@ -28,25 +26,30 @@ class DiffScreen {
     }
   }
 
+  val column1 = new ColumnConstraints
+  column1.setPercentWidth(50)
+  val column2 = new ColumnConstraints
+  column2.setPercentWidth(50)
+
   val gridPane = new GridPane {
     id = "resultsGridPane"
+    columnConstraints.addAll(column1, column2)
 
     add(button, 0, 0)
 
-    add(label1, 0, 1)
-    add(labelLeft, 0, 2)
-    add(resultLeft, 0, 3)
+    add(labelLeft, 0, 1)
+    add(resultLeft, 0, 2)
 
-    add(labelRight, 1, 2)
-    add(resultRight, 1, 3)
+    add(labelRight, 1, 1)
+    add(resultRight, 1, 2)
   }
 
-  val pane: AnchorPane = new AnchorPane {
-    id = "pane"
-    children.add(gridPane)
+
+  val theScene = new Scene {
+    stylesheets.add("diffscreen.css")
+    fill = Color.rgb(38, 38, 38) // #262626
+    root = gridPane
   }
-  AnchorPane.setAnchors(gridPane, 10, 10, 10, 10)
-  
 
 
 
@@ -54,12 +57,7 @@ class DiffScreen {
     title = "Iria - Folder Compare Results"
     minWidth = 650
     minHeight = 500
-
-    scene = new Scene {
-      stylesheets.add("diffscreen.css")
-      fill = Color.rgb(38, 38, 38)
-      root = pane
-    }
+    scene = theScene
   }
 
   var compareConfigScreen: Option[CompareConfigScreen] = None
