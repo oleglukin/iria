@@ -9,37 +9,45 @@ import scalafx.scene.layout.GridPane
 import scalafx.scene.control.{Label, TextField, Button}
 import scalafx.stage.DirectoryChooser
 
-class CompareConfigScreen (
-  val config: CompareConfig,
-  val diffScreen: DiffScreen
-  ) {
+class CompareConfigScreen (val diffScreen: DiffScreen) {
 
   val label = new Label("Select folders to compare")
 
   val dirChoser = new DirectoryChooser { title = "Select folder to compare" }
 
+  def getPath(dc: DirectoryChooser, st: Stage, default: String): String = dc.showDialog(st) match {
+    case null => default
+    case v => v.getAbsolutePath
+  }
+
+  def left = CompareConfig.left.getOrElse("")
+  def right = CompareConfig.right.getOrElse("")
+
   val leftFolderLabel = new Label("Left")
   val leftFolderText = new TextField {
-    text = config.left
+    text = left
     onMouseClicked = (e: javafx.scene.input.MouseEvent) => {
-      text = dirChoser.showDialog(stage).getAbsolutePath // TODO handle escape key pressed
+      CompareConfig.left = Some(getPath(dirChoser, stage, left))
+      text = left
     }
   }
 
   val rightFolderLabel = new Label("Right")
   val rightFolderText = new TextField {
-    text = config.right
+    text = right
     onMouseClicked = (e: javafx.scene.input.MouseEvent) => {
-      text = dirChoser.showDialog(stage).getAbsolutePath // TODO handle escape key pressed
+      CompareConfig.right = Some(getPath(dirChoser, stage, right))
+      text = right
     }
   }
 
   val compareButton = new Button("Compare"){
     onAction = (event: ActionEvent) => {
-      config.left = leftFolderText.getText
-      config.right = rightFolderText.getText
+      CompareConfig.left = Some(leftFolderText.getText)
+      CompareConfig.right = Some(rightFolderText.getText)
 
       stage.hide
+      diffScreen.displayElements
       diffScreen.stage.showAndWait
     }
   }
@@ -56,7 +64,7 @@ class CompareConfigScreen (
       stylesheets.add("compareconfig.css")
       fill = Color.rgb(38, 38, 38)
       content = new GridPane {
-        id = "gridPane"
+        id = "compareConfigGridPane"
 
         add(label, 1, 0)
         add(leftFolderLabel, 0, 1)

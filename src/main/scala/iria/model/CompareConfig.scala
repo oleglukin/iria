@@ -1,6 +1,6 @@
 package iria.model
 
-class CompareConfig(
-    var left: String,
-    var right: String
-)
+object CompareConfig {
+    var left: Option[String] = None
+    var right: Option[String] = None
+}
