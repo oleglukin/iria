@@ -10,15 +10,24 @@ import scalafx.scene.control.{Label, TextField, Button}
 import iria.model.CompareConfig
 import javafx.event.ActionEvent
 import scalafx.stage.DirectoryChooser
+import scalafx.application.Platform
 
 
-object Iria {
+object Iria extends App {
 
-  val compareConfig = new CompareConfig("", "")
+  Platform.startup(new Runnable() {
+    def run = {
+      println("-- In runnable")
+      val compareConfig = new CompareConfig("", "")
 
-  val compareConfigScreen: CompareConfigScreen = new CompareConfigScreen {
-    config = compareConfig
-  }
+      val compareConfigScreen = new CompareConfigScreen {
+        config = compareConfig
+      }
+
+    }
+  })
+
+  
 
   //compareConfigScreen.show
 

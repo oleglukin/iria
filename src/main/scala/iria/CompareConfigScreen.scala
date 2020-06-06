@@ -43,7 +43,7 @@ class CompareConfigScreen {
         }
     }
     
-    val stage: Stage = new PrimaryStage {
+    val stage: Stage = new Stage() {
       title = "Iria - Folder Compare"
 
       maxWidth = 800
@@ -66,6 +66,7 @@ class CompareConfigScreen {
       }
     }
 
-    //def show: Unit = stage.show
+    stage.show
+
   }
 }
