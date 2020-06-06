@@ -18,11 +18,9 @@ object Iria extends App {
   Platform.startup(new Runnable() {
     def run = {
       println("-- In runnable")
-      val compareConfig = new CompareConfig("", "")
+      val compareConfig = new CompareConfig("xLeft", "xRight")
 
-      val compareConfigScreen = new CompareConfigScreen {
-        config = compareConfig
-      }
+      val compareConfigScreen = new CompareConfigScreen(compareConfig)
 
     }
   })
