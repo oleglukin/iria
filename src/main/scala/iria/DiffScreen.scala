@@ -6,12 +6,16 @@ import scalafx.stage.Stage
 import scalafx.scene.Scene
 import scalafx.scene.paint.Color
 import scalafx.scene.layout.GridPane
-import scalafx.scene.control.{Label, Button}
+import scalafx.scene.control.{Label, Button, TextArea}
+import scalafx.scene.layout.HBox
+
 
 class DiffScreen {
   val label1 = new Label("Comparison results here for folders:")
-  val label2 = new Label
-  val label3 = new Label
+  val labelLeft = new Label
+  val labelRight = new Label
+  val resultLeft = new TextArea
+  val resultRight = new TextArea
 
   val button = new Button("Select folders") {
     onAction = (event: ActionEvent) => {
@@ -23,33 +27,42 @@ class DiffScreen {
     }
   }
 
+  val hbox = new HBox(8) {
+    id = "hbox"
+    children.add(
+      new GridPane {
+        id = "resultsGridPane"
+
+        add(button, 0, 0)
+
+        add(label1, 0, 1)
+        add(labelLeft, 0, 2)
+        add(resultLeft, 0, 3)
+
+        add(labelRight, 1, 2)
+        add(resultRight, 1, 3)
+      }
+    )
+  }
+
 
   val stage: Stage = new Stage {
     title = "Iria - Folder Compare Results"
-
     minWidth = 650
     minHeight = 500
 
     scene = new Scene {
       stylesheets.add("diffscreen.css")
       fill = Color.rgb(38, 38, 38)
-      content = new GridPane {
-        id = "resultsGridPane"
-
-        add(label1, 0, 0)
-        add(label2, 0, 1)
-        add(label3, 0, 2)
-
-        add(button, 0, 3)
-      }
+      content = hbox
     }
   }
 
   var compareConfigScreen: Option[CompareConfigScreen] = None
 
   def displayElements: Unit = {
-    label2.text = getValueOrDefault(CompareConfig.left)
-    label3.text = getValueOrDefault(CompareConfig.right)
+    labelLeft.text = getValueOrDefault(CompareConfig.left)
+    labelRight.text = getValueOrDefault(CompareConfig.right)
   }
 
   def getValueOrDefault(input: Option[String]): String = input match {

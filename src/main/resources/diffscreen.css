@@ -1,9 +1,14 @@
 .label{
-    -fx-text-fill: #ffffff;
+  -fx-text-fill: #ffffff;
 }
 
-#compareConfigGridPane {
-    -fx-padding: 50, 100, 50, 50;
-    -fx-hgap: 10;
-    -fx-vgap: 10;
+#resultsGridPane {
+  -fx-padding: 20;
+  -fx-hgap: 10;
+  -fx-vgap: 10;
+  -fx-grid-lines-visible: true;
+}
+
+#hbox {
+  -fx-fill-height: true;
 }
