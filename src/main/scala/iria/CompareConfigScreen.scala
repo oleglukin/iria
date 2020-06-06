@@ -1,16 +1,18 @@
 package iria
 
+import javafx.event.ActionEvent
+import iria.model.CompareConfig
 import scalafx.stage.Stage
 import scalafx.scene.Scene
 import scalafx.scene.paint.Color
 import scalafx.scene.layout.GridPane
 import scalafx.scene.control.{Label, TextField, Button}
-import javafx.event.ActionEvent
 import scalafx.stage.DirectoryChooser
-import iria.model.CompareConfig
-import scalafx.application.JFXApp.PrimaryStage
 
-class CompareConfigScreen (var config: CompareConfig) {
+class CompareConfigScreen (
+  val config: CompareConfig,
+  val diffScreen: DiffScreen
+  ) {
 
   val label = new Label("Select folders to compare")
 
@@ -34,17 +36,15 @@ class CompareConfigScreen (var config: CompareConfig) {
 
   val compareButton = new Button("Compare"){
     onAction = (event: ActionEvent) => {
-    config.left = leftFolderText.getText
-    config.right = rightFolderText.getText
+      config.left = leftFolderText.getText
+      config.right = rightFolderText.getText
 
-    // TODO open other stage and produce results
-    import scalafx.scene.control.Alert // remove this
-    import scalafx.scene.control.Alert.AlertType
-    new Alert(AlertType.Information, s"${config.left}, ${config.right}").showAndWait()
+      stage.hide
+      diffScreen.stage.showAndWait
     }
   }
   
-  val stage: Stage = new Stage() {
+  val stage: Stage = new Stage {
     title = "Iria - Folder Compare"
 
     maxWidth = 800
