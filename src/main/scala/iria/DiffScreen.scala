@@ -3,11 +3,9 @@ package iria
 import iria.model.CompareConfig
 import javafx.event.ActionEvent
 import scalafx.stage.Stage
-import scalafx.scene.{Scene, Group}
-import scalafx.scene.paint.Color
-import scalafx.scene.layout.GridPane
+import scalafx.scene.Scene
 import scalafx.scene.control.{Label, Button, TextArea}
-import scalafx.scene.layout.ColumnConstraints
+import scalafx.scene.layout.{GridPane, ColumnConstraints, RowConstraints, Priority}
 
 
 class DiffScreen {
@@ -26,14 +24,18 @@ class DiffScreen {
     }
   }
 
-  val column1 = new ColumnConstraints
-  column1.setPercentWidth(50)
-  val column2 = new ColumnConstraints
-  column2.setPercentWidth(50)
+  
 
   val gridPane = new GridPane {
     id = "resultsGridPane"
+
+    val column1 = new ColumnConstraints { percentWidth = 50 }
+    val column2 = new ColumnConstraints { percentWidth = 50 }
+    val row1 = new RowConstraints
+    val row2 = new RowConstraints
+    val row3 = new RowConstraints { vgrow = Priority.Always }
     columnConstraints.addAll(column1, column2)
+    rowConstraints.addAll(row1, row2, row3)
 
     add(button, 0, 0)
 
@@ -45,19 +47,14 @@ class DiffScreen {
   }
 
 
-  val theScene = new Scene {
-    stylesheets.add("diffscreen.css")
-    fill = Color.rgb(38, 38, 38) // #262626
-    root = gridPane
-  }
-
-
-
   val stage: Stage = new Stage {
     title = "Iria - Folder Compare Results"
     minWidth = 650
     minHeight = 500
-    scene = theScene
+    scene = new Scene {
+      stylesheets.add("diffscreen.css")
+      root = gridPane
+    }
   }
 
   var compareConfigScreen: Option[CompareConfigScreen] = None
