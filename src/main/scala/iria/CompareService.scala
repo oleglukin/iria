@@ -11,21 +11,21 @@ object CompareService {
   def getTreeModel: TreeItem[DirItem] = {
     // test / mock data
     val dt = LocalDateTime.now
-    val root = new TreeItem[DirItem] (new DirItem("/my/folder/", new ReadOnlyStringProperty(this, "name", "dirX"), 0, dt)) {expanded = true}
+    val root = new TreeItem[DirItem] (new DirItem("/my/folder/", new ReadOnlyStringProperty(this, "name", "dirX"), 0, dt, false)) {expanded = true}
 
     val rootPath = "/my/folder/dirX"
-    val f1 = new TreeItem[DirItem] (new DirItem(rootPath, new ReadOnlyStringProperty(this, "name", "file1.txt"), 0, dt))
-    val f2 = new TreeItem[DirItem] (new DirItem(rootPath, new ReadOnlyStringProperty(this, "name", "file2.png"), 0, dt))
-    val subf2 = new TreeItem[DirItem] (new DirItem(rootPath, new ReadOnlyStringProperty(this, "name", "subfolder2"), 0, dt)) {expanded = true}
-    val subf1 = new TreeItem[DirItem] (new DirItem(rootPath, new ReadOnlyStringProperty(this, "name", "subfolder1"), 0, dt)) {expanded = true}
+    val f1 = new TreeItem[DirItem] (new DirItem(rootPath, new ReadOnlyStringProperty(this, "name", "file1.txt"), 180.64, dt, true))
+    val f2 = new TreeItem[DirItem] (new DirItem(rootPath, new ReadOnlyStringProperty(this, "name", "file2.png"), 6.41, dt, true))
+    val subf2 = new TreeItem[DirItem] (new DirItem(rootPath, new ReadOnlyStringProperty(this, "name", "subfolder2"), 0, dt, false)) {expanded = true}
+    val subf1 = new TreeItem[DirItem] (new DirItem(rootPath, new ReadOnlyStringProperty(this, "name", "subfolder1"), 0, dt, false)) {expanded = true}
 
     val subf1Path = rootPath + "/subfolder1"
     val subf2Path = rootPath + "/subfolder2"
-    val f11 = new TreeItem[DirItem] (new DirItem(subf1Path, new ReadOnlyStringProperty(this, "name", "pic.png"), 0, dt))
-    val f12 = new TreeItem[DirItem] (new DirItem(subf1Path, new ReadOnlyStringProperty(this, "name", "text.txt"), 0, dt))
-    val f13 = new TreeItem[DirItem] (new DirItem(subf1Path, new ReadOnlyStringProperty(this, "name", "f894.jpg"), 0, dt))
-    val f21 = new TreeItem[DirItem] (new DirItem(subf2Path, new ReadOnlyStringProperty(this, "name", "9951635.png"), 0, dt))
-    val f22 = new TreeItem[DirItem] (new DirItem(subf2Path, new ReadOnlyStringProperty(this, "name", ".gitignore"), 0, dt))
+    val f11 = new TreeItem[DirItem] (new DirItem(subf1Path, new ReadOnlyStringProperty(this, "name", "pic.png"), 16, dt, true))
+    val f12 = new TreeItem[DirItem] (new DirItem(subf1Path, new ReadOnlyStringProperty(this, "name", "text.txt"), 914.2, dt, true))
+    val f13 = new TreeItem[DirItem] (new DirItem(subf1Path, new ReadOnlyStringProperty(this, "name", "f894.jpg"), 156, dt, true))
+    val f21 = new TreeItem[DirItem] (new DirItem(subf2Path, new ReadOnlyStringProperty(this, "name", "9951635.png"), 3210.02, dt, true))
+    val f22 = new TreeItem[DirItem] (new DirItem(subf2Path, new ReadOnlyStringProperty(this, "name", ".gitignore"), 17, dt, true))
     root.children.addAll(f1, f2, subf1, subf2)
     subf1.children.addAll(f11, f12, f13)
     subf2.children.addAll(f21, f22)

@@ -1,7 +1,6 @@
 package iria
 
 import iria.model.CompareConfig
-import iria.model.DirItem
 import javafx.event.ActionEvent
 import scalafx.stage.Stage
 import scalafx.scene.Scene
@@ -77,18 +76,24 @@ class DiffScreen {
 
 
   def getTreeView = {
-
+    import iria.model.DirItem
     import scalafx.scene.control.TreeTableColumn
-    import java.time.LocalDateTime
     
     val tw = new TreeTableView[DirItem]
-    val column1 = new TreeTableColumn[DirItem, String] {
-      text = "Name"
-      prefWidth = 150
-      cellValueFactory = {p => new iria.model.DirItemNameFactory(p.value.value.value) }
+    val column1 = new TreeTableColumn[DirItem, String]("Name") {
+      prefWidth = 260
+      cellValueFactory = { p => new iria.model.DirItemNameFactory(p.value.value.value) }
     }
-    val column2 = new TreeTableColumn[DirItem, Double]("size")
-    val column3 = new TreeTableColumn[DirItem, LocalDateTime]("date")
+
+    val column2 = new TreeTableColumn[DirItem, String]("Size") {
+      prefWidth = 80
+      cellValueFactory = { p => new iria.model.DirItemSizeFactory(p.value.value.value) }
+    }
+
+    val column3 = new TreeTableColumn[DirItem, String]("Date") {
+      prefWidth = 150
+      cellValueFactory = { p => new iria.model.DirItemDateFactory(p.value.value.value) }
+    }
 
     tw.columns.addAll(column1, column2, column3)
     tw
