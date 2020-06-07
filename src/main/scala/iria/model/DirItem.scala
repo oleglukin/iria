@@ -5,7 +5,7 @@ import java.time.format.DateTimeFormatter
 import scalafx.beans.property.ReadOnlyStringProperty
 
 case class DirItem (
-  val parent: String, // TODO this might not be requried
+  val parent: String, // TODO this might not be requried. Relative path starting from root
   val name: ReadOnlyStringProperty,
   val size: Double,
   val updateDate: LocalDateTime,
@@ -16,6 +16,7 @@ case class DirItem (
   val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
   def updateDateString: ReadOnlyStringProperty = new ReadOnlyStringProperty(this, "size", updateDate.format(formatter))
 }
+
 
 class DirItemNameFactory(val item: DirItem) extends scalafx.beans.value.ObservableValue[String, String] {
   override def delegate: javafx.beans.value.ObservableValue[String] = item.name

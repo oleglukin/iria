@@ -1,6 +1,7 @@
 package iria
 
 import iria.model.DirItem
+import iria.model.DirTree
 import java.time.LocalDateTime
 import scalafx.scene.control.TreeItem
 import scalafx.beans.property.ReadOnlyStringProperty
@@ -31,4 +32,8 @@ object CompareService {
     subf2.children.addAll(f21, f22)
     root
   }
+
+  // def getDirTree(rootPath: String): DirTree = {
+  //   new DirTree(new DirItem, )
+  // }
 }
