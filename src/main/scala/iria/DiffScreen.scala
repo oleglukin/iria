@@ -85,7 +85,7 @@ class DiffScreen {
     val column1 = new TreeTableColumn[DirItem, String] {
       text = "Name"
       prefWidth = 150
-      cellValueFactory = {p => new ov(p.value.value.value) }
+      cellValueFactory = {p => new iria.model.DirItemNameFactory(p.value.value.value) }
     }
     val column2 = new TreeTableColumn[DirItem, Double]("size")
     val column3 = new TreeTableColumn[DirItem, LocalDateTime]("date")
@@ -93,13 +93,4 @@ class DiffScreen {
     tw.columns.addAll(column1, column2, column3)
     tw
   }
-}
-
-import javafx.beans.property.ObjectProperty
-import javafx.beans.property.adapter.JavaBeanObjectPropertyBuilder
-class ov(val item: DirItem) extends scalafx.beans.value.ObservableValue[String, String] {
-
-  override def delegate: javafx.beans.value.ObservableValue[String] = item.name
-
-  override def value: String = item.name.get
 }
