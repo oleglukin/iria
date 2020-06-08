@@ -3,82 +3,77 @@ package iria
 import iria.model.DirItem
 import iria.model.DirTree
 import java.io.File
-import java.time.LocalDateTime
+import java.time.{LocalDateTime, Instant, ZoneId}
 import scalafx.scene.control.TreeItem
 
 
 object CompareService {
-  
-  def getTreeModel(rootPath: String): TreeItem[DirItem] = {
 
-    val tree = getDirTree(rootPath)
+  /**
+    * Get directory tree object for the given path, produce TreeModel from it
+    * @param rootPath
+    * @return TreeModel to be used in UI TreeTableView
+    */
+  def getTreeModel(path: String): TreeItem[DirItem] = {
+    val tree = dirTreeFromPath(path)
 
-    val root = new TreeItem[DirItem] (tree.node) {expanded = true}
-
-    val children: Seq[TreeItem[DirItem]] = tree.children.map(x => x match {
-      case x.node if x.node.isFile => new TreeItem[DirItem](x.node)
-      case dir => new TreeItem[DirItem](dir.node) {expanded = true}
-    })
-
-    println("++ children count: " + children.toArray.length)
-
+    val root = new TreeItem[DirItem] (tree.node) { expanded = true }
+    val children: Seq[TreeItem[DirItem]] = getTreeItemChildren(tree)
     children.foreach(ch => root.children.add(ch))
 
     root
   }
 
-  def getTreeModelMock(rootPath: String): TreeItem[DirItem] = { // TODO delete this
-    // test / mock data
-    val dt = LocalDateTime.now
-    val root = new TreeItem[DirItem] (new DirItem("/my/folder/", "dirX", 0, dt, false)) {expanded = true}
 
-    val mockRootPath = "/my/folder/dirX"
-    val f1 = new TreeItem[DirItem] (new DirItem(rootPath, "file1.txt", 180.64, dt, true))
-    val f2 = new TreeItem[DirItem] (new DirItem(rootPath, "file2.png", 6.41, dt, true))
-    val subf2 = new TreeItem[DirItem] (new DirItem(rootPath, "subfolder2", 0, dt, false)) {expanded = true}
-    val subf1 = new TreeItem[DirItem] (new DirItem(rootPath, "subfolder1", 0, dt, false)) {expanded = true}
-
-    val subf1Path = rootPath + "/subfolder1"
-    val subf2Path = rootPath + "/subfolder2"
-    val f11 = new TreeItem[DirItem] (new DirItem(subf1Path, "pic.png", 16, dt, true))
-    val f12 = new TreeItem[DirItem] (new DirItem(subf1Path, "text.txt", 914.2, dt, true))
-    val f13 = new TreeItem[DirItem] (new DirItem(subf1Path, "f894.jpg", 156, dt, true))
-    val f21 = new TreeItem[DirItem] (new DirItem(subf2Path, "9951635.png", 3210.02, dt, true))
-    val f22 = new TreeItem[DirItem] (new DirItem(subf2Path, ".gitignore", 17, dt, true))
-    root.children.addAll(f1, f2, subf1, subf2)
-    subf1.children.addAll(f11, f12, f13)
-    subf2.children.addAll(f21, f22)
-    root
-  }
+  /**
+    * Get DirTree root children (leaves and branches) and construct sequence of TreeItem
+    * @param tree DirTree to traverse
+    * @return sequence of TreeItem
+    */
+  def getTreeItemChildren(root: DirTree):Seq[TreeItem[DirItem]] = 
+    root.children.map(x => x match {
+      case x.node if x.node.isFile => new TreeItem[DirItem](x.node)
+      case dir => {
+        val item = new TreeItem[DirItem](dir.node) {expanded = true}
+        val childItems = getTreeItemChildren(dir)
+        childItems.foreach(ch => item.children.add(ch))
+        item
+      }
+    })
 
 
   
   /** Traverse files and subdirectories and construct DirTree
     */
-  def getDirTree(rootPath: String): DirTree = {
+  def dirTreeFromPath(rootPath: String): DirTree = {
     val root = new File(rootPath) // TODO handle invalid root path
-
-    println(s"  rootPath: ${rootPath}\n  abs path: ${root.getAbsolutePath}\n  canonical path: ${root.getCanonicalPath}\n" +
-      s"  file name: ${root.getName}")
-
-    val mockSize: Double = 16
-    val mockDate: LocalDateTime = LocalDateTime.now
-
-    val rootItem = new DirItem(rootPath, rootPath, mockSize, mockDate, false)
-
-    val children = root match {
-      case dir if dir.isDirectory => {
-        dir.listFiles.map(x => {
-          val node = new DirItem(x.getParent, x.getName, mockSize, mockDate, false)
-          new DirTree(node, Seq()) // TODO recursively traverse subdirectories
-        }).toSeq
-      }
-      case file => {
-        val node = new DirItem(file.getParent, file.getName, mockSize, mockDate, true)
-        Seq(new DirTree(node, Seq()))
-      }
-    }
-
+    val rootItem = new DirItem(rootPath, root.getName, 0, LocalDateTime.now, false)
+    val children = getDirChildren(root)
     new DirTree(rootItem, children)
   }
+
+
+  /**
+    * Get given root dir children: files and subfolders recursively
+    * @param root the root dir
+    * @return sequence of DirTree objects: leaves (files) and branches (subdirectories)
+    */
+  def getDirChildren(root: File): Seq[DirTree] = {
+    root.listFiles.map(_ match {
+      case dir if dir.isDirectory => {
+        val node = new DirItem(dir.getParent, dir.getName, 0, LocalDateTime.now, false)
+        val children = getDirChildren(dir) // recursively traverse subdirectories
+        new DirTree(node, children)
+      }
+      case file => {
+        val fileLengthBytes = file.length
+        val lastModifiedDate = localDateTimeFromMs(file.lastModified)
+        val node = new DirItem(file.getParent, file.getName, fileLengthBytes, lastModifiedDate, true)
+        new DirTree(node, Seq())
+      }
+    }).toSeq
+  }
+
+
+  def localDateTimeFromMs(ms: Long) = LocalDateTime.ofInstant(Instant.ofEpochMilli(ms), ZoneId.systemDefault())
 }

@@ -82,21 +82,25 @@ class DiffScreen {
     
     val ttw = new TreeTableView[DirItem]
     val column1 = new TreeTableColumn[DirItem, String]("Name") {
-      prefWidth = 260
+      prefWidth = 270
+      sortable = false
       cellValueFactory = _.value.value.value.nameProperty
     }
 
     val column2 = new TreeTableColumn[DirItem, String]("Size") {
       prefWidth = 80
+      sortable = false
       cellValueFactory = _.value.value.value.sizeProperty
     }
 
     val column3 = new TreeTableColumn[DirItem, String]("Date") {
       prefWidth = 150
+      sortable = false
       cellValueFactory = _.value.value.value.updateDateProperty
     }
 
     ttw.columns.addAll(column1, column2, column3)
+    
     ttw
   }
 }
