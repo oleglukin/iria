@@ -118,12 +118,12 @@ class CompareConfigScreen (val diffScreen: DiffScreen) {
 
   /**
     * Creates bew Buttom adding directory choser and corresponding text field behaviour
-    * @param textField
-    * @param textStyle
-    * @param dirChoser
-    * @param defaultPath
-    * @param stage
-    * @return bew Buttom node
+    * @param textField text field node to update on button action
+    * @param textStyle set text field style on action
+    * @param dirChoser DirectoryChooser to use
+    * @param defaultPath default path if user doesn select directory
+    * @param stage use this stage to show dialog
+    * @return new Buttom node
     */
   def createBrowseButton(
     textField: TextField,
