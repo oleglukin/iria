@@ -22,9 +22,9 @@ class DiffScreen {
     }
   }
 
-  val resultLeft = getTreeView
+  val resultLeft = getTreeTableView
   resultLeft.setRoot(CompareService.getTreeModel)
-  val resultRight = getTreeView
+  val resultRight = getTreeTableView
   resultRight.setRoot(CompareService.getTreeModel)
   
 
@@ -75,27 +75,27 @@ class DiffScreen {
   }
 
 
-  def getTreeView = {
+  def getTreeTableView = {
     import iria.model.DirItem
     import scalafx.scene.control.TreeTableColumn
     
-    val tw = new TreeTableView[DirItem]
+    val ttw = new TreeTableView[DirItem]
     val column1 = new TreeTableColumn[DirItem, String]("Name") {
       prefWidth = 260
-      cellValueFactory = { p => new iria.model.DirItemNameFactory(p.value.value.value) }
+      cellValueFactory = _.value.value.value.nameProperty
     }
 
     val column2 = new TreeTableColumn[DirItem, String]("Size") {
       prefWidth = 80
-      cellValueFactory = { p => new iria.model.DirItemSizeFactory(p.value.value.value) }
+      cellValueFactory = _.value.value.value.sizeProperty
     }
 
     val column3 = new TreeTableColumn[DirItem, String]("Date") {
       prefWidth = 150
-      cellValueFactory = { p => new iria.model.DirItemDateFactory(p.value.value.value) }
+      cellValueFactory = _.value.value.value.updateDateProperty
     }
 
-    tw.columns.addAll(column1, column2, column3)
-    tw
+    ttw.columns.addAll(column1, column2, column3)
+    ttw
   }
 }
