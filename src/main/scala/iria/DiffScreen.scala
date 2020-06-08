@@ -23,10 +23,7 @@ class DiffScreen {
   }
 
   val resultLeft = getTreeTableView
-  resultLeft.setRoot(CompareService.getTreeModel)
   val resultRight = getTreeTableView
-  resultRight.setRoot(CompareService.getTreeModel)
-  
 
   val gridPane = new GridPane {
     id = "resultsGridPane"
@@ -64,6 +61,10 @@ class DiffScreen {
   /** Display/render diff screen UI elements
     */
   def displayElements: Unit = {
+    // do the actual logic
+    resultLeft.setRoot(CompareService.getTreeModel(getValueOrDefault(CompareConfig.left)))
+    resultRight.setRoot(CompareService.getTreeModel(getValueOrDefault(CompareConfig.right)))
+
     labelLeft.text = getValueOrDefault(CompareConfig.left)
     labelRight.text = getValueOrDefault(CompareConfig.right)
   }

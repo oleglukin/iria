@@ -2,7 +2,7 @@ package iria.model
 
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import scalafx.beans.property.{ReadOnlyStringProperty, StringProperty}
+import scalafx.beans.property.StringProperty
 
 case class DirItem (
   val parent: String, // TODO this might not be requried. Relative path starting from root
