@@ -27,7 +27,7 @@ object CompareService {
 
   /**
     * Get DirTree root children (leaves and branches) and construct sequence of TreeItem
-    * @param tree DirTree to traverse
+    * @param root DirTree to traverse
     * @return sequence of TreeItem
     */
   def getTreeItemChildren(root: DirTree):Seq[TreeItem[DirItem]] = 
@@ -43,11 +43,14 @@ object CompareService {
 
 
   
-  /** Traverse files and subdirectories and construct DirTree
+  /**
+    * Traverse files and subdirectories and construct DirTree
+    * @param path directory path to start from
+    * @return DirTree structure with files and subdirectories
     */
-  def dirTreeFromPath(rootPath: String): DirTree = {
-    val root = new File(rootPath) // TODO handle invalid root path
-    val rootItem = new DirItem(rootPath, root.getName, 0, LocalDateTime.now, false)
+  def dirTreeFromPath(path: String): DirTree = {
+    val root = new File(path) // TODO handle invalid root path
+    val rootItem = new DirItem(path, root.getName, 0, LocalDateTime.now, false)
     val children = getDirChildren(root)
     new DirTree(rootItem, children)
   }
