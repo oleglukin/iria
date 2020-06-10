@@ -9,7 +9,8 @@ case class DirItem (
   val name: String,
   val size: Double,
   val updateDate: LocalDateTime,
-  val isFile: Boolean
+  val isFile: Boolean,  // true for files, false for directories
+  val status: Option[DirItemStatus.Value]
 ) {
   val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
 
@@ -24,4 +25,11 @@ case class DirItem (
     case true => updateDate.format(formatter)
     case false => "" // consider displaying directory update date as well
   })
+}
+
+
+object DirItemStatus extends Enumeration {
+  val New = Value     // item exists in this tree but not in the other directory tree
+  val Missing = Value // item is not in this tree but exists in the other
+  val Differs = Value // item exists in both trees but is different (content, size, update date)
 }

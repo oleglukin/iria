@@ -59,11 +59,16 @@ class DiffScreen {
   var compareConfigScreen: Option[CompareConfigScreen] = None
 
   /** Display/render diff screen UI elements
-    */
+   * Use CompareService functions to read directory tree structures and compare them
+   */
   def displayElements: Unit = {
-    // do the actual logic
-    resultLeft.setRoot(CompareService.getTreeModel(getValueOrDefault(CompareConfig.left)))
-    resultRight.setRoot(CompareService.getTreeModel(getValueOrDefault(CompareConfig.right)))
+    val leftTree = CompareService.dirTreeFromPath(getValueOrDefault(CompareConfig.left))
+    val rightTree = CompareService.dirTreeFromPath(getValueOrDefault(CompareConfig.left))
+
+    val (leftTreeCompared, rightTreeCompared) = CompareService.compare(leftTree, rightTree)
+
+    resultLeft.setRoot(CompareService.getTreeModel(leftTree))
+    resultRight.setRoot(CompareService.getTreeModel(rightTree))
 
     labelLeft.text = getValueOrDefault(CompareConfig.left)
     labelRight.text = getValueOrDefault(CompareConfig.right)

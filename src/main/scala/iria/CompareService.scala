@@ -14,13 +14,10 @@ object CompareService {
     * @param rootPath
     * @return TreeModel to be used in UI TreeTableView
     */
-  def getTreeModel(path: String): TreeItem[DirItem] = {
-    val tree = dirTreeFromPath(path)
-
+  def getTreeModel(tree: DirTree): TreeItem[DirItem] = {
     val root = new TreeItem[DirItem] (tree.node) { expanded = true }
     val children: Seq[TreeItem[DirItem]] = getTreeItemChildren(tree)
     children.foreach(ch => root.children.add(ch))
-
     root
   }
 
@@ -50,7 +47,7 @@ object CompareService {
     */
   def dirTreeFromPath(path: String): DirTree = {
     val root = new File(path) // TODO handle invalid root path
-    val rootItem = new DirItem(path, root.getName, 0, LocalDateTime.now, false)
+    val rootItem = new DirItem(path, root.getName, 0, LocalDateTime.now, false, None)
     val children = getDirChildren(root)
     new DirTree(rootItem, children)
   }
@@ -64,14 +61,14 @@ object CompareService {
   def getDirChildren(root: File): Seq[DirTree] = {
     root.listFiles.map(_ match {
       case dir if dir.isDirectory => {
-        val node = new DirItem(dir.getParent, dir.getName, 0, LocalDateTime.now, false)
+        val node = new DirItem(dir.getParent, dir.getName, 0, LocalDateTime.now, false, None)
         val children = getDirChildren(dir) // recursively traverse subdirectories
         new DirTree(node, children)
       }
       case file => {
         val fileLengthBytes = file.length
         val lastModifiedDate = localDateTimeFromMs(file.lastModified)
-        val node = new DirItem(file.getParent, file.getName, fileLengthBytes, lastModifiedDate, true)
+        val node = new DirItem(file.getParent, file.getName, fileLengthBytes, lastModifiedDate, true, None)
         new DirTree(node, Seq())
       }
     }).toSeq
@@ -79,4 +76,10 @@ object CompareService {
 
 
   def localDateTimeFromMs(ms: Long) = LocalDateTime.ofInstant(Instant.ofEpochMilli(ms), ZoneId.systemDefault())
+
+
+  def compare(left: DirTree, right: DirTree): (DirTree, DirTree) = {
+    // TODO implement the actual comparison logic
+    (left, right)
+  }
 }
