@@ -1,7 +1,6 @@
 package iria
 
-import iria.model.DirItem
-import iria.model.DirTree
+import iria.model.{DirItem, DirTree, DirItemStatus}
 import java.io.File
 import java.time.{LocalDateTime, Instant, ZoneId}
 import scalafx.scene.control.TreeItem
@@ -80,6 +79,14 @@ object CompareService {
 
   def compare(left: DirTree, right: DirTree): (DirTree, DirTree) = {
     // TODO implement the actual comparison logic
-    (left, right)
+    //left.node.status = DirItemStatus.Same
+
+    val nodeLeft: DirItem = left.node.addStatus(DirItemStatus.Same)
+    val newLeft = new DirTree(nodeLeft, Seq())
+
+    val nodeRight = right.node.addStatus(DirItemStatus.Same)
+    val newRight = new DirTree(nodeRight, Seq())
+
+    (newLeft, newRight)
   }
 }

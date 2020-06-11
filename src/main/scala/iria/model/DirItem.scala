@@ -25,6 +25,8 @@ case class DirItem (
     case true => updateDate.format(formatter)
     case false => "" // consider displaying directory update date as well
   })
+
+  def addStatus(status: DirItemStatus.Value) = new DirItem(parent, name, size, updateDate, isFile, Some(status))
 }
 
 
@@ -32,4 +34,5 @@ object DirItemStatus extends Enumeration {
   val New = Value     // item exists in this tree but not in the other directory tree
   val Missing = Value // item is not in this tree but exists in the other
   val Differs = Value // item exists in both trees but is different (content, size, update date)
+  val Same = Value    // there is no difference
 }
