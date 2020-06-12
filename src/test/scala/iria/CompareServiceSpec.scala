@@ -34,7 +34,7 @@ class CompareServiceSpec extends AnyFlatSpec with Matchers {
     val fileDirTree = new DirTree(file, Seq())
     new DirTree(rootNode, Seq(fileDirTree))
   }
-
+/*
   "A tree with a missing file" should "get this file marked as missing" in {
     val (left, right) = CompareService.compare(emptyDir, treeWithOneFile)
     left.children.length should be > 0
@@ -45,5 +45,5 @@ class CompareServiceSpec extends AnyFlatSpec with Matchers {
     val (left, right) = CompareService.compare(emptyDir, treeWithOneFile)
     right.children.length should be > 0
     right.children(0).node.status shouldEqual Some(DirItemStatus.New)
-  }
+  }*/
 }

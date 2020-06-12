@@ -27,6 +27,20 @@ case class DirItem (
   })
 
   def addStatus(status: DirItemStatus.Value) = new DirItem(parent, name, size, updateDate, isFile, Some(status))
+
+  // TODO also compare by file size and update date (later by contents)
+  def matches(other: DirItem) = other match {
+    case same if same.name == name && same.isFile == isFile => true
+    case _ => false
+  }
+
+  /**
+    * Check if other collection of DirItems contains similar to this
+    * @param nodes sequence of other nodes (DirItems)
+    */
+  def existsIn(nodes: Seq[DirItem]): Boolean = {
+    nodes.exists(di => di.matches(this))
+  }
 }
 
 

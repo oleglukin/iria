@@ -79,7 +79,14 @@ object CompareService {
 
   def compare(left: DirTree, right: DirTree): (DirTree, DirTree) = {
     // TODO implement the actual comparison logic
-    //left.node.status = DirItemStatus.Same
+    
+/*
+    left.children.map(l => l.node match{
+      case node if right.children.exists(r: DirTree => r.node.matches(node)) => node.addStatus(DirItemStatus.Same)
+      case newNode => newNode.addStatus(DirItemStatus.New)
+    })*/
+
+
 
     val nodeLeft: DirItem = left.node.addStatus(DirItemStatus.Same)
     val newLeft = new DirTree(nodeLeft, Seq())
