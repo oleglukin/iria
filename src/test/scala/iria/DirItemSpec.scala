@@ -24,24 +24,24 @@ class DirItemSpec extends AnyFlatSpec with Matchers {
   }
 
   "A DirItem" should "match itself" in {
-    val (file1, file2, dir) = get2SimilarFilesAndDir
-    file1.matches(file1) should be (true)
+    val file1 = new DirItem("/", "file1", 2, LocalDateTime.now, true, None)
+    DirItem.matchTogether(file1, file1) should be (true)
   }
 
   it should "match another if its name and type (isFile) is the same" in {
     val (file1, file2, dir) = get2SimilarFilesAndDir
-    file1.matches(file2) should be (true)
+    DirItem.matchTogether(file1, file2) should be (true)
   }
 
   it should "not match another if their names are different" in {
     val file1 = new DirItem("/", "file1", 2, LocalDateTime.now, true, None)
     val file2 = new DirItem("/", "file2", 2, LocalDateTime.now, true, None)
-    file1.matches(file2) should be (false)
+    DirItem.matchTogether(file1, file2) should be (false)
   }
 
   it should "not match another if their types (isFile) are different" in {
     val (file1, file2, dir) = get2SimilarFilesAndDir
-    file1.matches(dir) should be (false)
+    DirItem.matchTogether(file1, dir) should be (false)
   }
 
   
