@@ -77,23 +77,47 @@ object CompareService {
   def localDateTimeFromMs(ms: Long) = LocalDateTime.ofInstant(Instant.ofEpochMilli(ms), ZoneId.systemDefault())
 
 
-  def compare(left: DirTree, right: DirTree): (DirTree, DirTree) = {
-    // TODO implement the actual comparison logic
+  /**
+    * Directory tree comparison logic
+    * @param left
+    * @param right
+    * @return left and right trees compared
+    */
+  def compareTrees(left: DirTree, right: DirTree): (DirTree, DirTree) = {
     
-/*
-    left.children.map(l => l.node match{
-      case node if right.children.exists(r: DirTree => r.node.matches(node)) => node.addStatus(DirItemStatus.Same)
-      case newNode => newNode.addStatus(DirItemStatus.New)
-    })*/
+    val leftChildren = left.children.map(_.node)
+    val rightChildren = right.children.map(_.node)
 
+    val leftChildrenProcessed = compareNodes(leftChildren, rightChildren)
+    val rightChildrenProcessed = compareNodes(rightChildren, leftChildren)
 
+    val leftSubTree = leftChildrenProcessed.map(new DirTree(_, Seq()))
+    val rightSubTree = rightChildrenProcessed.map(new DirTree(_, Seq()))
 
     val nodeLeft: DirItem = left.node.addStatus(DirItemStatus.Same)
-    val newLeft = new DirTree(nodeLeft, Seq())
+    val newLeft = new DirTree(nodeLeft, leftSubTree)
 
     val nodeRight = right.node.addStatus(DirItemStatus.Same)
-    val newRight = new DirTree(nodeRight, Seq())
+    val newRight = new DirTree(nodeRight, rightSubTree)
 
     (newLeft, newRight)
+  }
+
+  /**
+    * Compare sequence of items against other. Identify new, existing, and missing items
+    * @param items sequence to process
+    * @param other sequence of items to compare with
+    */
+  def compareNodes(items: Seq[DirItem], other: Seq[DirItem]): Seq[DirItem] = {
+    val existingAndNew = items.map(_ match {
+      // TODO check if item with the same name exists but different (size or content)
+      case ex if other.exists(DirItem.matchTogether(_, ex)) => ex.addStatus(DirItemStatus.Same)
+      case newNode => newNode.addStatus(DirItemStatus.New)
+    })
+
+    val missing = other.filter(otherNode => !items.exists(DirItem.matchTogether(_, otherNode)))
+      .map(_.addStatus(DirItemStatus.Missing))
+    
+    existingAndNew ++ missing
   }
 }

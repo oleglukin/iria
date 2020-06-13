@@ -65,7 +65,7 @@ class DiffScreen {
     val leftTree = CompareService.dirTreeFromPath(getValueOrDefault(CompareConfig.left))
     val rightTree = CompareService.dirTreeFromPath(getValueOrDefault(CompareConfig.right))
 
-    val (leftTreeCompared, rightTreeCompared) = CompareService.compare(leftTree, rightTree)
+    val (leftTreeCompared, rightTreeCompared) = CompareService.compareTrees(leftTree, rightTree)
 
     resultLeft.setRoot(CompareService.getTreeModel(leftTreeCompared))
     resultRight.setRoot(CompareService.getTreeModel(rightTreeCompared))
