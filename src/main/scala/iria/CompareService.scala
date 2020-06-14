@@ -85,19 +85,13 @@ object CompareService {
     */
   def compareTrees(left: DirTree, right: DirTree): (DirTree, DirTree) = {
     
-    val leftChildren = left.children.map(_.node)
-    val rightChildren = right.children.map(_.node)
-
-    val leftChildrenProcessed = compareNodes(leftChildren, rightChildren)
-    val rightChildrenProcessed = compareNodes(rightChildren, leftChildren)
-
-    val leftSubTree = leftChildrenProcessed.map(new DirTree(_, Seq()))
-    val rightSubTree = rightChildrenProcessed.map(new DirTree(_, Seq()))
+    val leftSubTree: Seq[DirTree] = compareTreeSequences(left.children, right.children)
+    val rightSubTree: Seq[DirTree] = compareTreeSequences(right.children, left.children)
 
     val nodeLeft: DirItem = left.node.addStatus(DirItemStatus.Same)
     val newLeft = new DirTree(nodeLeft, leftSubTree)
 
-    val nodeRight = right.node.addStatus(DirItemStatus.Same)
+    val nodeRight: DirItem = right.node.addStatus(DirItemStatus.Same)
     val newRight = new DirTree(nodeRight, rightSubTree)
 
     (newLeft, newRight)
@@ -105,20 +99,40 @@ object CompareService {
   
 
   /**
-    * Compare sequence of items against other. Identify new, existing, and missing items
+    * Compare sequence of dir trees against other. Identify new, existing, and missing items
     * @param items sequence to process
     * @param other sequence of items to compare with
     */
-  def compareNodes(items: Seq[DirItem], other: Seq[DirItem]): Seq[DirItem] = {
+  def compareTreeSequences(items: Seq[DirTree], others: Seq[DirTree]): Seq[DirTree] = {
     val existingAndNew = items.map(_ match {
       // TODO check if item with the same name exists but different (size or content)
-      case ex if other.exists(DirItem.matchTogether(_, ex)) => ex.addStatus(DirItemStatus.Same)
-      case newNode => newNode.addStatus(DirItemStatus.New)
+      case ex if existsMatching(ex, others) => 
+        new DirTree(
+          ex.node.addStatus(DirItemStatus.Same),
+          compareTreeSequences(
+            ex.children,
+            getCorrespondingDir(ex, others).children
+          )
+        )
+      case nw => nw addStatus DirItemStatus.New
     })
 
-    val missing = other.filter(otherNode => !items.exists(DirItem.matchTogether(_, otherNode)))
-      .map(_.addStatus(DirItemStatus.Missing))
+    val missing = others.filter(other => !existsMatching(other, items))
+      .map(_ addStatus DirItemStatus.Missing)
     
     existingAndNew ++ missing
   }
+
+
+  /** Check if given DirTree exists in sequence of other DirTree items (match together) */
+  def existsMatching(that: DirTree, others: Seq[DirTree]): Boolean = 
+    others.exists(other => DirItem.matchTogether(other.node, that.node))
+
+
+  /** Similar to existsMatching, but returns the matching item
+    * @param that given DirTree item
+    * @param others sequence of other DirTree items
+    */
+  def getCorrespondingDir(that: DirTree, others: Seq[DirTree]): DirTree =
+    others.filter(other => DirItem.matchTogether(other.node, that.node))(0)
 }

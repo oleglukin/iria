@@ -38,38 +38,38 @@ class CompareServiceSpec extends AnyFlatSpec with Matchers {
     new DirTree(rootNode, Seq(fileDirTree))
   }
 
-  def twoSimilarDirItems: (DirItem, DirItem) = {
-    val file =  new DirItem("/dir1", "file1", 112, now, true, None)
-    val fileCopy =  new DirItem("/another/Dir", "file1", 765, now, true, None)
+  def twoSimilarItems: (DirTree, DirTree) = {
+    val file =  new DirTree(new DirItem("/dir1", "file1", 112, now, true, None), Seq())
+    val fileCopy =  new DirTree(new DirItem("/another/Dir", "file1", 765, now, true, None), Seq())
     (file, fileCopy)
   }
 
-  def anotherDirItem = new DirItem("/another/Dir", "file2", 110, now, true, None)
+  def anotherItem: DirTree = new DirTree(new DirItem("/another/Dir", "file2", 110, now, true, None), Seq())
 
   "Sequence of nodes when passed to compareNodes function" should "get new nodes marked as 'New'" in {
-    val nodes = treeWithOneFile.children.map(_.node)
-    var sequence = CompareService.compareNodes(nodes, Seq())
+    var sequence = CompareService.compareTreeSequences(treeWithOneFile.children, Seq())
     sequence.length should be > 0
-    sequence(0).status shouldEqual Some(DirItemStatus.New)
+    sequence(0).node.status shouldEqual Some(DirItemStatus.New)
   }
 
   it should "get existings nodes marked as 'Same' (TODO: should implement Same vs Diff logic later)" in {
-    val (file1, file1Copy) = twoSimilarDirItems
-    var sequence = CompareService.compareNodes(Seq(file1), Seq(file1Copy, anotherDirItem))
+    val (file1, file1Copy) = twoSimilarItems
+    var sequence = CompareService.compareTreeSequences(Seq(file1), Seq(file1Copy, anotherItem))
     sequence.length should be > 0
-    sequence.filter(_.name == "file1")(0).status shouldEqual Some(DirItemStatus.Same)
+    sequence.map(_.node).filter(_.name == "file1")(0).status shouldEqual Some(DirItemStatus.Same)
   }
 
   it should "get missing nodes marked as 'Missing'" in {
-    val (file1, file1Copy) = twoSimilarDirItems    
-    var sequence = CompareService.compareNodes(Seq(file1), Seq(file1Copy, anotherDirItem))
+    val (file1, file1Copy) = twoSimilarItems    
+    var sequence = CompareService.compareTreeSequences(Seq(file1), Seq(file1Copy, anotherItem))
     sequence.length should be > 0
-    sequence.exists(_.name == "file2") should be (true)
-    sequence.filter(_.name == "file2")(0).status shouldEqual Some(DirItemStatus.Missing)
+    sequence.map(_.node).exists(_.name == "file2") should be (true)
+    sequence.map(_.node).filter(_.name == "file2")(0).status shouldEqual Some(DirItemStatus.Missing)
   }
 
 
-  // check compareTrees function 
+  // Check compareTrees function
+  // 1. Simple check without recursion / subdirectories
   "A tree with a missing file" should "get this file marked as missing" in {
     val (left, right) = CompareService.compareTrees(emptyDir, treeWithOneFile)
     left.children.length should be > 0
@@ -83,23 +83,64 @@ class CompareServiceSpec extends AnyFlatSpec with Matchers {
   }
 
 
-  // TODO check recursion
+  // 2. Check recursion / subdirectory compare
   def treeWithSubDir = {
-    val subDirItem = new DirItem("/dir1", "subdir2", 4, now, false, None)
-    val subDir = new DirTree(subDirItem, Seq(new DirTree(anotherDirItem, Seq())))
-    val (file1, file1Copy) = twoSimilarDirItems
-    val rootChildren = Seq(new DirTree(file1, Seq()), subDir)
-    new DirTree(rootNode, rootChildren)
+    val (file1, file1Copy) = twoSimilarItems
+    new DirTree(
+      rootNode, 
+      Seq(
+        file1,
+        new DirTree( // subdirectory with one file in it
+          new DirItem("/dir1", "subdir2", 4, now, false, None),
+          Seq(anotherItem)
+        )
+      )
+    )
   }
 
-  "If a node (file, dir) is missing from a subdir it" should "be identified as missing" in {
+  "If a node (file, dir) is missing from a subdir it" should "be identified as 'missing'" in {
     val (left, right) = CompareService.compareTrees(treeWithOneFile, treeWithSubDir)
 
     left.children.exists(i => i.node.name == "subdir2" && i.node.isFile == false) should be (true)
     val subDir = left.children.filter(i => i.node.name == "subdir2" && i.node.isFile == false)(0)
 
-    subDir.children.exists(i => i.node.name == anotherDirItem.name && i.node.isFile == true) should be (true)
-    val missingFile = subDir.children.filter(i => i.node.name == anotherDirItem.name && i.node.isFile == true)(0).node
+    val predicate = (i: DirTree) => i.node.name == anotherItem.node.name && i.node.isFile == true // the file we need to check
+    subDir.children.exists(predicate) should be (true)
+    val missingFile = subDir.children.filter(predicate)(0).node
+    missingFile.status should be (Some(DirItemStatus.Missing))
+  }
+
+  it should "be identified as 'new' in the other tree" in {
+    val (left, right) = CompareService.compareTrees(treeWithOneFile, treeWithSubDir)
+
+    val subDir = right.children.filter(i => i.node.name == "subdir2" && i.node.isFile == false)(0)
+
+    val predicate = (i: DirTree) => i.node.name == anotherItem.node.name && i.node.isFile == true // the file we need to check
+    subDir.children.exists(predicate) should be (true)
+    val newFile = subDir.children.filter(predicate)(0).node
+    newFile.status should be (Some(DirItemStatus.New))
+  }
+
+  it should "be identified the same way for any level of nesting, e.g. 3rd level" in {
+    val nestedTreeWithOneFile = new DirTree(
+      new DirItem("/", "dir0", 4, now, false, None),
+      Seq(treeWithOneFile)
+    )
+
+    val nestedTreeWithSubDir = new DirTree(
+      new DirItem("/", "dir0", 4, now, false, None),
+      Seq(treeWithSubDir)
+    )
+
+    val (left, right) = CompareService.compareTrees(nestedTreeWithOneFile, nestedTreeWithSubDir)
+
+    val subSubDir = left.children.filter(i => i.node.isFile == false)(0)
+      .children.filter(i => i.node.isFile == false)(0)
+
+    val predicate = (i: DirTree) => i.node.name == anotherItem.node.name && i.node.isFile == true // the file we need to check
+
+    subSubDir.children.exists(predicate) should be (true)
+    val missingFile = subSubDir.children.filter(predicate)(0).node
     missingFile.status should be (Some(DirItemStatus.Missing))
   }
 }
