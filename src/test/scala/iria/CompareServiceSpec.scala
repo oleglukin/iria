@@ -1,6 +1,6 @@
 package iria
 
-import iria.CompareService
+import iria.logic.CompareService
 import iria.model.{DirItem, DirTree, DirItemStatus}
 import java.time.LocalDateTime
 import org.scalatest.flatspec.AnyFlatSpec
@@ -8,7 +8,7 @@ import org.scalatest.matchers.should.Matchers
 
 class CompareServiceSpec extends AnyFlatSpec with Matchers {
 
-  // Simple tests for equality
+  // Check compareTrees function. Simple tests for equality
   def now = LocalDateTime.now
   def rootNode = new DirItem("/", "dir1", 2, now, false, None)
   def emptyDir = new DirTree(rootNode, Seq())
@@ -19,7 +19,6 @@ class CompareServiceSpec extends AnyFlatSpec with Matchers {
     
     left.node.name shouldEqual tree.node.name
     right.node.name shouldEqual tree.node.name
-    
   }
 
   it should "return those copies with status 'Same'" in {
@@ -31,7 +30,7 @@ class CompareServiceSpec extends AnyFlatSpec with Matchers {
   }
 
 
-  // Check compareNodes function
+  // Check compareTreeSequences function
   def treeWithOneFile: DirTree = {
     val file =  new DirItem("/dir1", "file1", 462, now, true, None)
     val fileDirTree = new DirTree(file, Seq())
@@ -46,7 +45,7 @@ class CompareServiceSpec extends AnyFlatSpec with Matchers {
 
   def anotherItem: DirTree = new DirTree(new DirItem("/another/Dir", "file2", 110, now, true, None), Seq())
 
-  "Sequence of nodes when passed to compareNodes function" should "get new nodes marked as 'New'" in {
+  "Sequence of nodes when passed to compareTreeSequences function" should "get new nodes marked as 'New'" in {
     var sequence = CompareService.compareTreeSequences(treeWithOneFile.children, Seq())
     sequence.length should be > 0
     sequence(0).node.status shouldEqual Some(DirItemStatus.New)

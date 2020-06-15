@@ -1,6 +1,7 @@
-package iria
+package iria.ui
 
 import iria.model.CompareConfig
+import iria.logic.{CompareService, FileSystemService}
 import javafx.event.ActionEvent
 import scalafx.stage.Stage
 import scalafx.scene.Scene
@@ -62,13 +63,13 @@ class DiffScreen {
    * Use CompareService functions to read directory tree structures and compare them
    */
   def displayElements: Unit = {
-    val leftTree = CompareService.dirTreeFromPath(getValueOrDefault(CompareConfig.left))
-    val rightTree = CompareService.dirTreeFromPath(getValueOrDefault(CompareConfig.right))
+    val leftTree = FileSystemService.dirTreeFromPath(getValueOrDefault(CompareConfig.left))
+    val rightTree = FileSystemService.dirTreeFromPath(getValueOrDefault(CompareConfig.right))
 
     val (leftTreeCompared, rightTreeCompared) = CompareService.compareTrees(leftTree, rightTree)
 
-    resultLeft.setRoot(CompareService.getTreeModel(leftTreeCompared))
-    resultRight.setRoot(CompareService.getTreeModel(rightTreeCompared))
+    resultLeft.setRoot(FileSystemService.getTreeModel(leftTreeCompared))
+    resultRight.setRoot(FileSystemService.getTreeModel(rightTreeCompared))
 
     labelLeft.text = getValueOrDefault(CompareConfig.left)
     labelRight.text = getValueOrDefault(CompareConfig.right)

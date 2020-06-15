@@ -1,6 +1,7 @@
 package iria
 
 import iria.model.CompareConfig
+import iria.ui.{DiffScreen, CompareConfigScreen}
 import scalafx.application.Platform
 
 

@@ -1,4 +1,4 @@
-package iria
+package iria.ui
 
 import javafx.event.ActionEvent
 import iria.model.CompareConfig
