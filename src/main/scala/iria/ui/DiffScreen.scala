@@ -1,7 +1,7 @@
 package iria.ui
 
 import iria.model.CompareConfig
-import iria.logic.{CompareService, FileSystemService}
+import iria.logic.{CompareService, FileSystemService, TreeSort}
 import javafx.event.ActionEvent
 import scalafx.stage.Stage
 import scalafx.scene.Scene
@@ -67,9 +67,11 @@ class DiffScreen {
     val rightTree = FileSystemService.dirTreeFromPath(getValueOrDefault(CompareConfig.right))
 
     val (leftTreeCompared, rightTreeCompared) = CompareService.compareTrees(leftTree, rightTree)
+    val leftTreeSorted = TreeSort.sortTrees(Seq(leftTreeCompared), true)(0)
+    val rightTreeSorted = TreeSort.sortTrees(Seq(rightTreeCompared), true)(0)
 
-    resultLeft.setRoot(FileSystemService.getTreeModel(leftTreeCompared))
-    resultRight.setRoot(FileSystemService.getTreeModel(rightTreeCompared))
+    resultLeft.setRoot(UIUtils.getTreeModel(leftTreeSorted))
+    resultRight.setRoot(UIUtils.getTreeModel(rightTreeSorted))
 
     labelLeft.text = getValueOrDefault(CompareConfig.left)
     labelRight.text = getValueOrDefault(CompareConfig.right)
