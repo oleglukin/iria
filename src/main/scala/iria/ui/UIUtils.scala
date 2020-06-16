@@ -1,7 +1,8 @@
 package iria.ui
 
-import iria.model.{DirTree, DirItem}
+import iria.model.{DirTree, DirItem, DirItemStatus}
 import scalafx.scene.control.TreeItem
+
 
 object UIUtils {
   
@@ -33,4 +34,36 @@ object UIUtils {
         item
       }
     })
+
+  
+
+  import scalafx.scene.control.{TreeTableView, TreeTableColumn, TreeTableRow, TreeTableCell}
+  /**
+    * Define diff screen tree table view to display DirItems
+    */
+  def getTreeTableView: TreeTableView[DirItem] = {
+
+    val ttw = new TreeTableView[DirItem]
+    val column1 = new TreeTableColumn[DirItem, String]("Name") {
+      prefWidth = 270
+      sortable = false
+      cellValueFactory = _.value.value.value.nameProperty
+    }
+
+    val column2 = new TreeTableColumn[DirItem, String]("Size") {
+      prefWidth = 80
+      sortable = false
+      cellValueFactory = _.value.value.value.sizeProperty
+    }
+
+    val column3 = new TreeTableColumn[DirItem, String]("Date") {
+      prefWidth = 150
+      sortable = false
+      cellValueFactory = _.value.value.value.updateDateProperty
+    }
+
+    ttw.columns.addAll(column1, column2, column3)
+
+    ttw
+  }
 }
