@@ -2,6 +2,7 @@ package iria.ui
 
 import iria.model.{DirTree, DirItem, DirItemStatus}
 import scalafx.scene.control.TreeItem
+import scalafx.beans.property.ObjectProperty
 
 
 object UIUtils {
@@ -48,6 +49,32 @@ object UIUtils {
       prefWidth = 270
       sortable = false
       cellValueFactory = _.value.value.value.nameProperty
+
+      cellFactory = { _ =>
+        new TreeTableCell[DirItem,String] {
+          item.onChange {
+            (p1, p2, p3) => {
+              text = p3
+
+              val row = this.getTreeTableRow
+              if (row != null && row.getItem != null) {
+                val dirItem: DirItem = row.getItem
+                text = dirItem.name
+
+                if (dirItem.isFile) {
+                  style = dirItem.status match {
+                    case dNew if dNew == Some(DirItemStatus.New) => "-fx-background-color:lightgreen"
+                    case dMis if dMis == Some(DirItemStatus.Missing) => "-fx-background-color:pink"
+                    case _ => "-fx-background-color:white"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+
+
     }
 
     val column2 = new TreeTableColumn[DirItem, String]("Size") {
