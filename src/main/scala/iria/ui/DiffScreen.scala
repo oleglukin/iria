@@ -59,6 +59,7 @@ class DiffScreen {
 
   var compareConfigScreen: Option[CompareConfigScreen] = None
 
+  
 
   /** Display/render diff screen UI elements
    * Use CompareService functions to read directory tree structures and compare them

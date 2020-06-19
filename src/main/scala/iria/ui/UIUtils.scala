@@ -2,9 +2,18 @@ package iria.ui
 
 import iria.model.{DirTree, DirItem, DirItemStatus}
 import scalafx.scene.control.TreeItem
+import javafx.event.EventHandler
+import javafx.scene.control.TreeItem.TreeModificationEvent
 
 
 object UIUtils {
+
+  // prevent from collapsing directories (temporary measure until issue #19 is solved)
+  val preventCollapsing = new EventHandler[TreeModificationEvent[Nothing]]{
+    override def handle(event: TreeModificationEvent[Nothing]) = {
+      event.getTreeItem.setExpanded(true)
+    }
+  }
   
   /**
     * Get directory tree object for the given path, produce TreeModel from it
@@ -13,12 +22,14 @@ object UIUtils {
     */
   def getTreeModel(tree: DirTree): TreeItem[DirItem] = {
     val root = new TreeItem[DirItem] (tree.node) { expanded = true }
+    root.addEventHandler(TreeItem.branchCollapsedEvent, preventCollapsing) // temp, issue #19
     val children: Seq[TreeItem[DirItem]] = getTreeItemChildren(tree)
     children.foreach(ch => root.children.add(ch))
     root
   }
 
 
+  
   /**
     * Get DirTree root children (leaves and branches) and construct sequence of TreeItem
     * @param root DirTree to traverse
@@ -28,7 +39,8 @@ object UIUtils {
     root.children.map(x => x match {
       case x.node if x.node.isFile => new TreeItem[DirItem](x.node)
       case dir => {
-        val item = new TreeItem[DirItem](dir.node) {expanded = true}
+        val item = new TreeItem[DirItem](dir.node) { expanded = true }
+        item.addEventHandler(TreeItem.branchCollapsedEvent, preventCollapsing) // temp, issue #19
         val childItems = getTreeItemChildren(dir)
         childItems.foreach(ch => item.children.add(ch))
         item
