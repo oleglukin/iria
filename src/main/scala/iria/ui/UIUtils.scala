@@ -2,7 +2,6 @@ package iria.ui
 
 import iria.model.{DirTree, DirItem, DirItemStatus}
 import scalafx.scene.control.TreeItem
-import scalafx.beans.property.ObjectProperty
 
 
 object UIUtils {
@@ -38,7 +37,7 @@ object UIUtils {
 
   
 
-  import scalafx.scene.control.{TreeTableView, TreeTableColumn, TreeTableRow, TreeTableCell}
+  import scalafx.scene.control.{TreeTableView, TreeTableColumn, TreeTableRow}
   /**
     * Define diff screen tree table view to display DirItems
     */
@@ -47,49 +46,40 @@ object UIUtils {
     val ttw = new TreeTableView[DirItem]
     val column1 = new TreeTableColumn[DirItem, String]("Name") {
       prefWidth = 270
-      sortable = false
       cellValueFactory = _.value.value.value.nameProperty
-
-      cellFactory = { _ =>
-        new TreeTableCell[DirItem,String] {
-          item.onChange {
-            (p1, p2, p3) => {
-              text = p3
-
-              val row = this.getTreeTableRow
-              if (row != null && row.getItem != null) {
-                val dirItem: DirItem = row.getItem
-                text = dirItem.name
-
-                if (dirItem.isFile) {
-                  style = dirItem.status match {
-                    case dNew if dNew == Some(DirItemStatus.New) => "-fx-background-color:lightgreen"
-                    case dMis if dMis == Some(DirItemStatus.Missing) => "-fx-background-color:pink"
-                    case _ => "-fx-background-color:white"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-
-
     }
 
     val column2 = new TreeTableColumn[DirItem, String]("Size") {
       prefWidth = 80
-      sortable = false
       cellValueFactory = _.value.value.value.sizeProperty
     }
 
     val column3 = new TreeTableColumn[DirItem, String]("Date") {
       prefWidth = 150
-      sortable = false
       cellValueFactory = _.value.value.value.updateDateProperty
     }
 
     ttw.columns.addAll(column1, column2, column3)
+    ttw.columns.foreach(_.setSortable(false))
+
+    // highlight new and missing items with background colour
+    ttw.rowFactory = { _ =>
+      new TreeTableRow[DirItem] {
+        item.onChange{
+          (p1, p2, p3) => {
+            val dirItem: DirItem = this.getItem
+            if (dirItem != null && dirItem.isFile)
+            {
+              style = dirItem.status match {
+                case dNew if dNew == Some(DirItemStatus.New) => "-fx-background-color:lightgreen"
+                case dMis if dMis == Some(DirItemStatus.Missing) => "-fx-background-color:pink"
+                case _ => null
+              }
+            }
+          }
+        }
+      }
+    }
 
     ttw
   }
