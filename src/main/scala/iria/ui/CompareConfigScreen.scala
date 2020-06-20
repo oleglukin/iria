@@ -26,7 +26,9 @@ class CompareConfigScreen (val diffScreen: DiffScreen) {
   val dirChoser = new DirectoryChooser { title = "Select directory to compare" }
 
   val leftDirText = createDirText(errorStyle, normalStyle)
+  leftDirText.text = "/home/oleg/Downloads/dir1/"
   val rightDirText = createDirText(errorStyle, normalStyle)
+  rightDirText.text = "/home/oleg/Downloads/dir2"
   val leftBrowseButton = createBrowseButton(leftDirText, normalStyle, dirChoser, left, stage)
   val rightBrowseButton = createBrowseButton(rightDirText, normalStyle, dirChoser, right, stage)
 

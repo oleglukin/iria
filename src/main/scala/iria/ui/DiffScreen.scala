@@ -6,14 +6,15 @@ import javafx.event.ActionEvent
 import scalafx.stage.Stage
 import scalafx.scene.Scene
 import scalafx.scene.control.{Label, Button}
-import scalafx.scene.layout.{GridPane, ColumnConstraints, RowConstraints, Priority}
+import scalafx.scene.layout.{GridPane, ColumnConstraints, RowConstraints, Priority, HBox}
+import scalafx.scene.layout.HBox
 
 
 class DiffScreen {
   val labelLeft = new Label
   val labelRight = new Label
 
-  val button = new Button("Select folders") {
+  val selectFoldersButton = new Button("Select folders") {
     onAction = (event: ActionEvent) => {
       stage.hide
       compareConfigScreen match {
@@ -22,6 +23,13 @@ class DiffScreen {
       }
     }
   }
+
+  val refreshButton = new Button("Refresh") {
+    onAction = (event: ActionEvent) => displayElements
+  }
+
+  val panelBox = new HBox(8);
+  panelBox.children.addAll(selectFoldersButton, refreshButton)
 
   val resultLeft = UIUtils.getTreeTableView
   val resultRight = UIUtils.getTreeTableView
@@ -37,7 +45,7 @@ class DiffScreen {
     columnConstraints.addAll(column1, column2)
     rowConstraints.addAll(row1, row2, row3)
 
-    add(button, 0, 0)
+    add(panelBox, 0, 0)
 
     add(labelLeft, 0, 1)
     add(resultLeft, 0, 2)
