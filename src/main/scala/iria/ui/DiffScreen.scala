@@ -28,11 +28,16 @@ class DiffScreen {
     onAction = (event: ActionEvent) => displayElements
   }
 
-  val panelBox = new HBox(8);
-  panelBox.children.addAll(selectFoldersButton, refreshButton)
+  val toLeftButton = new Button("To Left") {onAction = onToLeftButtonAction}
+  val toRightButton = new Button("To Right")
+
+  val panelBox = new HBox(8)
+  panelBox.children.addAll(selectFoldersButton, refreshButton, toRightButton, toLeftButton)
 
   val resultLeft = UIUtils.getTreeTableView
   val resultRight = UIUtils.getTreeTableView
+
+  val info = new Label { id = "info" }
 
   val gridPane = new GridPane {
     id = "resultsGridPane"
@@ -45,13 +50,15 @@ class DiffScreen {
     columnConstraints.addAll(column1, column2)
     rowConstraints.addAll(row1, row2, row3)
 
-    add(panelBox, 0, 0)
+    add(panelBox, 0, 0, 2, 1)
 
     add(labelLeft, 0, 1)
     add(resultLeft, 0, 2)
 
     add(labelRight, 1, 1)
     add(resultRight, 1, 2)
+
+    add(info, 0, 3)
   }
 
 
@@ -91,5 +98,25 @@ class DiffScreen {
     case Some("") => "Not defined"
     case Some(value) => value
     case _ => "Not defined"
+  }
+
+  
+
+  import javafx.event.EventHandler
+  import iria.model.{DirItem, DirItemStatus}
+
+  def onToLeftButtonAction: EventHandler[ActionEvent] = (event: ActionEvent) => {
+    info.text = ""
+    val selectedItem = resultLeft.getSelectionModel.getSelectedItem
+
+    selectedItem match {
+      case n if n == null => info.text = "Select a file on left panel"
+      case dir if !dir.getValue.isFile => info.text = "Select a file on left panel (not directory)"
+      case notn if notn.getValue.status != Some(DirItemStatus.New) => info.text = "Select a new file on left panel (missing from right dir)"
+      case f => println(f.getValue.parent + " - " + f.getValue.name) // TODO copy file if it's new
+    }
+
+    //println(selected.name)
+
   }
 }

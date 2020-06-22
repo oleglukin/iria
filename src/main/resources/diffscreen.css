@@ -8,3 +8,7 @@
   -fx-vgap: 10;
   -fx-background-color: #262626;
 }
+
+#info {
+  -fx-text-fill: red;
+}
