@@ -7,7 +7,6 @@ import scalafx.stage.Stage
 import scalafx.scene.Scene
 import scalafx.scene.control.{Label, Button}
 import scalafx.scene.layout.{GridPane, ColumnConstraints, RowConstraints, Priority, HBox}
-import scalafx.scene.layout.HBox
 
 
 class DiffScreen {
@@ -28,11 +27,11 @@ class DiffScreen {
     onAction = (event: ActionEvent) => displayElements
   }
 
-  val toLeftButton = new Button("To Left") {onAction = onToLeftButtonAction}
-  val toRightButton = new Button("To Right")
+  val toLeftButton = new Button("To Left")// {onAction = onToLeftButtonAction}
+  val toRightButton = new Button("To Right") { onAction = onToRightButtonAction }
 
   val panelBox = new HBox(8)
-  panelBox.children.addAll(selectFoldersButton, refreshButton, toRightButton, toLeftButton)
+  panelBox.children.addAll(selectFoldersButton, refreshButton, toLeftButton, toRightButton)
 
   val resultLeft = UIUtils.getTreeTableView
   val resultRight = UIUtils.getTreeTableView
@@ -105,7 +104,7 @@ class DiffScreen {
   import javafx.event.EventHandler
   import iria.model.{DirItem, DirItemStatus}
 
-  def onToLeftButtonAction: EventHandler[ActionEvent] = (event: ActionEvent) => {
+  def onToRightButtonAction: EventHandler[ActionEvent] = (event: ActionEvent) => {
     info.text = ""
     val selectedItem = resultLeft.getSelectionModel.getSelectedItem
 
@@ -117,6 +116,16 @@ class DiffScreen {
     }
 
     //println(selected.name)
+  }
 
+  import java.nio.file.{Files, Path}
+  import java.nio.file.StandardCopyOption._
+
+  def toPath (from: String, to: String) = {
+
+    val fromPath = Path.of(from)
+    val toPath = Path.of(to)
+
+    Files.copy(fromPath, toPath, REPLACE_EXISTING);
   }
 }
