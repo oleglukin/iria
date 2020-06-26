@@ -27,8 +27,8 @@ class CompareConfigScreen (val diffScreen: DiffScreen) {
 
   val leftDirText = createDirText(errorStyle, normalStyle)
   val rightDirText = createDirText(errorStyle, normalStyle)
-  val leftBrowseButton = createBrowseButton(leftDirText, normalStyle, dirChoser, left, stage)
-  val rightBrowseButton = createBrowseButton(rightDirText, normalStyle, dirChoser, right, stage)
+  val leftBrowseButton = createBrowseButton(leftDirText, normalStyle, dirChoser, left, stage, true)
+  val rightBrowseButton = createBrowseButton(rightDirText, normalStyle, dirChoser, right, stage, false)
 
 
   val compareButton = new Button("Compare") {
@@ -130,12 +130,19 @@ class CompareConfigScreen (val diffScreen: DiffScreen) {
     textStyle: String,
     dirChoser: DirectoryChooser,
     defaultPath: String,
-    stage: Stage
+    stage: Stage,
+    leftNotRight: Boolean
     ): Button =
     new Button("Browse") {
       onAction = (event: ActionEvent) => {
-        CompareConfig.left = Some(getPath(dirChoser, stage, defaultPath))
-        textField.text = left
+        val path = Some(getPath(dirChoser, stage, defaultPath))
+        if (leftNotRight) CompareConfig.left = path
+        else CompareConfig.right = path
+
+        textField.text = leftNotRight match {
+          case true => left
+          case _ => right
+        }
         textField.setStyle(textStyle)
       }
     }
