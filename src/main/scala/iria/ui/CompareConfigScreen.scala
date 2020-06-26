@@ -40,7 +40,7 @@ class CompareConfigScreen (val diffScreen: DiffScreen) {
           leftDirText.text = errormsg
         }
         case v => {
-          CompareConfig.left = Some(v)
+          CompareConfig.left = Some(correctPath(v))
         }
       }
 
@@ -51,7 +51,7 @@ class CompareConfigScreen (val diffScreen: DiffScreen) {
           rightDirText.text = errormsg
         }
         case v => {
-          CompareConfig.right = Some(v)
+          CompareConfig.right = Some(correctPath(v))
         }
       }
 
@@ -113,6 +113,13 @@ class CompareConfigScreen (val diffScreen: DiffScreen) {
   def getPath(dc: DirectoryChooser, st: Stage, default: String): String = dc.showDialog(st) match {
     case null => default
     case v => v.getAbsolutePath
+  }
+
+
+  /** Ensure that directory path ends with '/' */
+  def correctPath(path: String) = path match {
+    case yes if yes.endsWith("/") => yes
+    case no => no.concat("/")
   }
 
 
