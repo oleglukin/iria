@@ -17,7 +17,10 @@ class DiffScreen {
     onAction = (event: ActionEvent) => {
       stage.hide
       compareConfigScreen match {
-        case Some(screen) => screen.stage.show
+        case Some(screen) => {
+          screen.displayElements
+          screen.stage.show
+        }
         case _ => println("Error: compareConfigScreen is not defined") // TODO handle error
       }
     }
@@ -114,8 +117,6 @@ class DiffScreen {
       case notn if notn.getValue.status != Some(DirItemStatus.New) => info.text = "Select a new file on left panel (missing from right dir)"
       case f => println(f.getValue.parent + " - " + f.getValue.name) // TODO copy file if it's new
     }
-
-    //println(selected.name)
   }
 
   import java.nio.file.{Files, Path}

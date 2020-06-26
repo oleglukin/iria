@@ -63,6 +63,13 @@ class CompareConfigScreen (val diffScreen: DiffScreen) {
     }
   }
 
+
+  /** Render UI elements properly */
+  def displayElements: Unit = {
+    leftDirText.text = left
+    rightDirText.text = right
+  }
+
   
   stage.scene = new Scene {
     stylesheets.add("compareconfig.css")
