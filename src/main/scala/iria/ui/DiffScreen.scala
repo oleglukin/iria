@@ -115,18 +115,36 @@ class DiffScreen {
       case n if n == null => info.text = "Select a file on left panel"
       case dir if !dir.getValue.isFile => info.text = "Select a file on left panel (not directory)"
       case notn if notn.getValue.status != Some(DirItemStatus.New) => info.text = "Select a new file on left panel (missing from right dir)"
-      case f => println(f.getValue.parent + " - " + f.getValue.name) // TODO copy file if it's new
+      case f => copyToRight(f.getValue)
     }
   }
+
+
+  /** Copies given item from left to right */
+  def copyToRight(item: DirItem) = {
+    val relativePath = item.relativePath
+
+    val from = CompareConfig.left match {
+      case Some(value) => value + relativePath
+      case _ => "invalid path"
+    }
+
+    val to = CompareConfig.right match {
+      case Some(value) => value + relativePath
+      case _ => "invalid path"
+    }
+
+    copyToPath(from, to)
+    displayElements // TODO probably no need to rescan all dir structure
+  }
+
 
   import java.nio.file.{Files, Path}
   import java.nio.file.StandardCopyOption._
 
-  def toPath (from: String, to: String) = {
-
+  def copyToPath (from: String, to: String): Unit = {
     val fromPath = Path.of(from)
     val toPath = Path.of(to)
-
     Files.copy(fromPath, toPath, REPLACE_EXISTING);
   }
 }

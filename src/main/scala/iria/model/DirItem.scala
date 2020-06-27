@@ -5,7 +5,7 @@ import java.time.format.DateTimeFormatter
 import scalafx.beans.property.StringProperty
 
 case class DirItem (
-  val parent: String, // TODO this might not be requried. Relative path starting from root
+  val parent: String, // relative path starting from root
   val name: String,
   val size: Double,
   val updateDate: LocalDateTime,
@@ -30,12 +30,17 @@ case class DirItem (
 
   
 
-  /**
-    * Check if other collection of DirItems contains similar to this
+  /** Check if other collection of DirItems contains similar to this
     * @param nodes sequence of other nodes (DirItems)
     */
   def existsIn(nodes: Seq[DirItem]): Boolean = {
     nodes.exists(di => DirItem.matchTogether(di, this))
+  }
+
+
+  def relativePath: String = parent match {
+    case "" => name
+    case dir => dir + "/" + name
   }
 }
 

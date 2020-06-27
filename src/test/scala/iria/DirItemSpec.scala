@@ -6,8 +6,11 @@ import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 
 class DirItemSpec extends AnyFlatSpec with Matchers {
+
+  def now = LocalDateTime.now
+
   "A DirItem addStatus function" should "return a copy with provided status" in {
-    val item = new DirItem("/", "dir1", 2, LocalDateTime.now, false, None)
+    val item = new DirItem("/", "dir1", 2, now, false, None)
     val status = DirItemStatus.New
     val copy = item addStatus status
 
@@ -17,14 +20,14 @@ class DirItemSpec extends AnyFlatSpec with Matchers {
 
 
   def get2SimilarFilesAndDir: (DirItem, DirItem, DirItem) = {
-    val file1 = new DirItem("/", "file1", 2, LocalDateTime.now, true, None)
-    val file2 = new DirItem("/", "file1", 17, LocalDateTime.of(2020, 6, 12, 23, 41, 59), true, None)
-    val dir1 = new DirItem("/", "dir1", 43, LocalDateTime.now, false, None)
+    val file1 = new DirItem("", "file1", 2, now, true, None)
+    val file2 = new DirItem("", "file1", 17, LocalDateTime.of(2020, 6, 12, 23, 41, 59), true, None)
+    val dir1 = new DirItem("", "dir1", 43, now, false, None)
     (file1, file2, dir1)
   }
 
   "A DirItem" should "match itself" in {
-    val file1 = new DirItem("/", "file1", 2, LocalDateTime.now, true, None)
+    val file1 = new DirItem("", "file1", 2, now, true, None)
     DirItem.matchTogether(file1, file1) should be (true)
   }
 
@@ -34,8 +37,8 @@ class DirItemSpec extends AnyFlatSpec with Matchers {
   }
 
   it should "not match another if their names are different" in {
-    val file1 = new DirItem("/", "file1", 2, LocalDateTime.now, true, None)
-    val file2 = new DirItem("/", "file2", 2, LocalDateTime.now, true, None)
+    val file1 = new DirItem("", "file1", 2, now, true, None)
+    val file2 = new DirItem("", "file2", 2, now, true, None)
     DirItem.matchTogether(file1, file2) should be (false)
   }
 
@@ -52,13 +55,23 @@ class DirItemSpec extends AnyFlatSpec with Matchers {
   }
 
   it should "not exist in an empty sequence" in {
-    val file1 = new DirItem("/", "file1", 2, LocalDateTime.now, true, None)
+    val file1 = new DirItem("", "file1", 2, now, true, None)
     file1.existsIn(Seq()) should be (false)
   }
 
   it should "not exist in a sequence without matching elements" in {
-    val file1 = new DirItem("/", "file1", 2, LocalDateTime.now, true, None)
-    val file2 = new DirItem("/", "anotherFile", 2, LocalDateTime.now, true, None)
+    val file1 = new DirItem("/", "file1", 2, now, true, None)
+    val file2 = new DirItem("/", "anotherFile", 2, now, true, None)
     file1.existsIn(Seq(file2)) should be (false)
+  }
+
+  "A DirItem relative path" should "be just its name if it is in root" in {
+    val item = new DirItem("", "file.txt", 2, now, true, None)
+    item.relativePath should be ("file.txt")
+  }
+
+  it should "contain subdir if it is not in root" in {
+    val item = new DirItem("subdir1/subdir2", "file.jpg", 2, now, true, None)
+    item.relativePath should be ("subdir1/subdir2/file.jpg")
   }
 }
